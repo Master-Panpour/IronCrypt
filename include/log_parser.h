@@ -1,26 +1,37 @@
 #ifndef LOG_PARSER_H
 #define LOG_PARSER_H
 
-#include "threat_detection.h" 
+#include "activity.h"
 
-#define maxemp 100
-#define maxlog 10
+typedef enum {
+    PARSE_SUCCESS,
+    PARSE_ERROR_FILE,
+    PARSE_ERROR_FORMAT,
+    PARSE_ERROR_MEMORY
+} LogParseStatus;
 
-#ifdef _WIN32
-    #define SYSTEM_OS "Windows"
-    int readLogs(EmployeeActivity employees[]);
+/**
+ * @brief Parses Linux auth.log file
+ * @param entries Pointer to array of log entries
+ * @param count Pointer to count of parsed entries
+ * @return Parse status code
+ */
+LogParseStatus parse_linux_log(LogEntry **entries, size_t *count);
 
-#elif __APPLE__
-    #define SYSTEM_OS "macOS"
-    int readLogs(EmployeeActivity employees[]); 
+/**
+ * @brief Parses Windows event logs
+ * @param entries Pointer to array of log entries
+ * @param count Pointer to count of parsed entries
+ * @return Parse status code
+ */
+LogParseStatus parse_windows_log(LogEntry **entries, size_t *count);
 
-#elif __linux__
-    #define SYSTEM_OS "Linux"
-    int readLogs(EmployeeActivity employees[]);  
+/**
+ * @brief Parses macOS unified logs
+ * @param entries Pointer to array of log entries
+ * @param count Pointer to count of parsed entries
+ * @return Parse status code
+ */
+LogParseStatus parse_mac_log(LogEntry **entries, size_t *count);
 
-#else
-    #define SYSTEM_OS "Unknown OS"
-    #error "Unsupported operating system"
-#endif
-
-#endif
+#endif // LOG_PARSER_H

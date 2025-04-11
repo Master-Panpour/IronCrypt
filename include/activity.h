@@ -1,19 +1,24 @@
 #ifndef ACTIVITY_H
 #define ACTIVITY_H
 
-#define maxemp 100
-#define maxlog 10
+#include <time.h>
 
 typedef struct {
-    char name[50];
-    int logHrs[maxlog];
-    int logCount;
-    int fileAccessCount;
-} EmployeeActivity;
+    int hour;
+    int minute;
+} LoginTime;
 
-void detectThreats(EmployeeActivity *emp);
-int readLinuxLog(EmployeeActivity employees[]);
-int readWindowsLog(EmployeeActivity employees[]);
-int readMacLog(EmployeeActivity employees[]);
+typedef struct {
+    char user_id[32];
+    LoginTime login_time;
+    int login_count;
+    int file_access_count;
+    int failed_attempts;
+    int risk_score;
+} LogEntry;
 
-#endif
+// Maximum values for arrays
+#define MAX_USERS 1000
+#define MAX_LOG_ENTRIES 10000
+
+#endif // ACTIVITY_H

@@ -1,48 +1,46 @@
-#ifdef __linux__
-
+#include "../include/log_parser.h"
 #include <stdio.h>
 #include <string.h>
-#include "activity.h"
+#include <openssl/evp.h>
 
-#define AUTH_LOG "/var/log/auth.log"
-
-int readLinuxLog(EmployeeActivity employees[]) {
-    FILE *file = fopen(AUTH_LOG, "r");
-    if (!file) {
-        printf("Error: Unable to read %s. Run with sudo.\n", AUTH_LOG);
-        return 0;
-    }
-
-    char line[512], username[50];
-    int hour, count = 0;
-
+LogParseStatus parse_linux_log(LogEntry **entries, size_t *count) {
+    FILE *file = fopen(LOG_PATH, "r");
+    if (!file) return LOG_PARSE_ACCESS_DENIED;
+    
+    char line[1024];
+    *entries = NULL;
+    *count = 0;
+    
     while (fgets(line, sizeof(line), file)) {
-        if (strstr(line, "session opened for user")) {
-            sscanf(line, "%*s %*s %*s %d:%*d:%*d %*s %*s %s", &hour, username);
-
-            int i, found = 0;
-            for (i = 0; i < count; i++) {
-                if (strcmp(employees[i].name, username) == 0) {
-                    found = 1;
-                    break;
-                }
+        LogEntry entry = {0};
+        
+        // Example: Parse SSH logs
+        if (strstr(line, "sshd")) {
+            char *user = strstr(line, "user=");
+            if (user) {
+                sscanf(user, "user=%31s", entry.user);
+                sanitize_string(entry.user, MAX_USER_LEN);
             }
-
-            if (!found && count < maxemp) {
-                strcpy(employees[count].name, username);
-                employees[count].logCount = 0;
-                employees[count].fileAccessCount = 0;
-                i = count++;
-            }
-
-            if (employees[i].logCount < maxlog) {
-                employees[i].logHrs[employees[i].logCount++] = hour;
-            }
+            
+            // Add more parsing logic
+            encrypt_log_data(&entry);
+            
+            // Add to entries array
+            *entries = realloc(*entries, (*count + 1) * sizeof(LogEntry));
+            memcpy(&(*entries)[*count], &entry, sizeof(LogEntry));
+            (*count)++;
         }
     }
-
+    
     fclose(file);
-    return count;
+    return LOG_PARSE_SUCCESS;
 }
 
-#endif
+// Security: Sanitize input strings
+static void sanitize_string(char *str, size_t max_len) {
+    for (size_t i = 0; i < max_len && str[i]; i++) {
+        if (str[i] < 0x20 || str[i] > 0x7E) {
+            str[i] = '_';
+        }
+    }
+}

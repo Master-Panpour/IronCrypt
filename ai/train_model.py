@@ -24,19 +24,24 @@ class ModelTrainer:
         y = data['label'].values  # Binary labels: 0 (normal), 1 (anomaly)
         return X, y
 
-    def train_model(self, X_train):
+    def train_model(self, X_train, model_config=None):
         """
         Train an Isolation Forest model using the training data.
         :param X_train: Training feature matrix.
+        :param model_config: Dictionary of model parameters (optional)
         :return: Trained Isolation Forest model.
         """
+        # Use default parameters if none provided
+        if model_config is None:
+            model_config = {
+                'n_estimators': 100,
+                'max_samples': 0.75,
+                'contamination': 0.05,
+                'random_state': 42
+            }
+
         # Define hyperparameters for Isolation Forest
-        model = IsolationForest(
-            n_estimators=100,
-            max_samples=0.75,
-            contamination=0.05,
-            random_state=42
-        )
+        model = IsolationForest(**model_config)
         
         # Fit the model on training data
         model.fit(X_train)
@@ -72,12 +77,20 @@ class ModelTrainer:
         joblib.dump(model, self.model_path)
         print(f"Model saved successfully to {self.model_path}.")
 
-    def run_pipeline(self, data_path):
+    def run_pipeline(self, data_path, training_config=None, model_config=None):
         """
         Full training pipeline: load data -> split -> train -> evaluate -> save.
         :param data_path: Path to the CSV file containing preprocessed features and labels.
+        :param training_config: Dictionary of training parameters (optional)
         """
         try:
+            # Use default parameters if none provided
+            if training_config is None:
+                training_config = {
+                    'test_size': 0.3,
+                    'random_state': 42
+                }
+
             # Step 1: Load the data
             print("Loading data...")
             X, y = self.load_data(data_path)
@@ -86,13 +99,13 @@ class ModelTrainer:
             print("Splitting data into training and testing sets...")
             X_train, X_test, y_train, y_test = train_test_split(
                 X, y, 
-                test_size=0.3, 
-                random_state=42
+                test_size=training_config['test_size'],
+                random_state=training_config['random_state']
             )
 
             # Step 3: Train the model
             print("Training the model...")
-            model = self.train_model(X_train)
+            model = self.train_model(X_train, model_config=model_config)
 
             # Step 4: Evaluate the model
             print("Evaluating the model...")

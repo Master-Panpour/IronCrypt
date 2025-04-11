@@ -105,7 +105,7 @@ class DataPreprocessor:
 
 
 # Example usage
-if _name_ == "_main_":
+if __name__ == "__main__":
     # Sample raw logs (replace with actual log data)
     sample_logs = pd.DataFrame({
         'user': ['john', 'sarah', 'john', 'mike', 'sarah'],

@@ -6,7 +6,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 import joblib
 
 class ModelTrainer:
-    def _init_(self, model_path="threat_model.pkl"):
+    def __init__(self, model_path="threat_model.pkl"):
         """
         Initialize the trainer with the path to save the trained model.
         :param model_path: Path to save the trained model (default: "threat_model.pkl").

@@ -52,7 +52,7 @@ class AnomalyClassifier:
 
 
 # Example usage
-if _name_ == "_main_":
+if __name__ == "__main__":
     # Path to the pre-trained model
     MODEL_PATH = "threat_model.pkl"
 

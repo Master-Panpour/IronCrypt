@@ -1,0 +1,24 @@
+model:
+  name: IsolationForest
+  n_estimators: 100          # Number of trees in the forest
+  max_samples: 0.75          # Proportion of samples to draw for each tree
+  contamination: 0.05        # Proportion of anomalies in the data
+  random_state: 42           # Random seed for reproducibility
+
+training:
+  test_size: 0.3             # Proportion of data to use for testing
+  random_state: 42           # Random seed for train-test split
+
+features:
+  columns:
+    - login_freq             # Feature: Login frequency
+    - file_access_rate       # Feature: File access rate
+
+evaluation:
+  metrics:
+    - precision              # Evaluation metric: Precision
+    - recall                 # Evaluation metric: Recall
+    - f1_score               # Evaluation metric: F1 Score
+
+logging:
+  level: DEBUG               # Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)

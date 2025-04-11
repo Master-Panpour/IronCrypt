@@ -73,17 +73,41 @@ class ModelTrainer:
         print(f"Model saved successfully to {self.model_path}.")
 
     def run_pipeline(self, data_path):
-                """
+        """
         Full training pipeline: load data -> split -> train -> evaluate -> save.
         :param data_path: Path to the CSV file containing preprocessed features and labels.
-                         Example columns: ['login_freq', 'file_access_rate', 'label']
-                         Label column contains binary values (0 for normal, 1 for anomaly).
-                         Feature columns contain numerical values.
-                         Example rows:
-                         login_freq | file_access_rate | label
-                         -------------------------------------
-                             12     |       3          |   0
-                             45     |      78          |   1
-                             ...
+        """
+        try:
+            # Step 1: Load the data
+            print("Loading data...")
+            X, y = self.load_data(data_path)
 
-                         """
+            # Step 2: Split the data into training and testing sets
+            print("Splitting data into training and testing sets...")
+            X_train, X_test, y_train, y_test = train_test_split(
+                X, y, 
+                test_size=0.3, 
+                random_state=42
+            )
+
+            # Step 3: Train the model
+            print("Training the model...")
+            model = self.train_model(X_train)
+
+            # Step 4: Evaluate the model
+            print("Evaluating the model...")
+            precision, recall, f1 = self.evaluate_model(model, X_test, y_test)
+            print(f"\nModel Evaluation Metrics:")
+            print(f"Precision: {precision:.2f}")
+            print(f"Recall:    {recall:.2f}") 
+            print(f"F1 Score:  {f1:.2f}")
+
+            # Step 5: Save the trained model
+            print("\nSaving the model...")
+            self.save_model(model)
+
+            print("\nPipeline completed successfully!")
+
+        except Exception as e:
+            print(f"\nError in training pipeline: {str(e)}")
+            raise

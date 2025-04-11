@@ -3,8 +3,10 @@
 
 #ifdef _WIN32
     #define SYSTEM_OS "Windows"
-#else
+#elif __linux__
     #define SYSTEM_OS "Linux"
+#elif __APPLE__
+    #define SYSTEM_OS "macOS"
 #endif
 
 int main() {
@@ -17,6 +19,8 @@ int main() {
     totalEmployees = readLinuxLog(employees);
 #elif _WIN32
     totalEmployees = readWindowsLog(employees);
+#elif __APPLE__
+    totalEmployees = readMacLog(employees);
 #endif
 
     for (int i = 0; i < totalEmployees; i++) {

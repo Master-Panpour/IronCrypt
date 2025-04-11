@@ -14,5 +14,6 @@ typedef struct {
 void detectThreats(EmployeeActivity *emp);
 int readLinuxLog(EmployeeActivity employees[]);
 int readWindowsLog(EmployeeActivity employees[]);
+int readMacLog(EmployeeActivity employees[]);
 
 #endif

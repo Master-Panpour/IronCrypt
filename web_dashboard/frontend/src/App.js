@@ -1,15 +1,15 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import Alerts from './components/Alerts';
 
 function App() {
     return (
         <Router>
-            <Switch>
-                <Route path="/" exact component={Dashboard} />
-                <Route path="/alerts" component={Alerts} />
-            </Switch>
+            <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/alerts" element={<Alerts />} />
+            </Routes>
         </Router>
     );
 }

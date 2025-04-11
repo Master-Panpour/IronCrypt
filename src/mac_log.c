@@ -1,57 +1,52 @@
+#include "../include/log_parser.h"
 #include <stdlib.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
-#include "activity.h"
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#ifdef __APPLE__
 
-#include <TargetConditionals.h>
-#if TARGET_OS_MAC
-#include <mach-o/dyld.h>
-#endif
-#endif
+#define PARSER_BINARY "/usr/local/bin/unifiedlog_parser"
+#define OUTPUT_FILE "/tmp/macos_logs.csv"
 
-int readMacLog(EmployeeActivity employees[]){
-    FILE *fp = popen("log show --predicate 'eventMessage contains \"login\"' --info --last 1d", "r");
-    if (!fp) {
-        fprintf(stderr, "Error: Unable to read macOS log.\n");
-        return -1;
+LogParseStatus parse_mac_unified_log(LogEntry **entries, size_t *count) {
+    // Step 1: Run unifiedlog_parser to extract logs into CSV format
+    char command[512];
+    snprintf(command, sizeof(command), "%s --output %s", PARSER_BINARY, OUTPUT_FILE);
+    
+    int result = system(command);
+    if (result != 0) {
+        fprintf(stderr, "Error: Failed to execute unifiedlog_parser\n");
+        return LOG_PARSE_FAILURE;
     }
 
-    char line[512], username[50];
-    int hour, count = 0;
-
-    while (fgets(line, sizeof(line), fp)) {
-        if (strstr(line, "Account Name:")) {
-            sscanf(line, " Account Name: %s", username);
-            fgets(line, sizeof(line), fp);
-            sscanf(line, " Logon Time: %*s %d:%*d:%*d", &hour);
-
-            int i, found = 0;
-            for (i = 0; i < count; i++) {
-                if (strcmp(employees[i].name, username) == 0) {
-                    found = 1;
-                    break;
-                }
-            }
-
-            if (!found && count < maxemp) {
-                strcpy(employees[count].name, username);
-                employees[count].logCount = 0;
-                employees[count].fileAccessCount = 0;
-                i = count++;
-            }
-
-            if (employees[i].logCount < maxlog) {
-                employees[i].logHrs[employees[i].logCount++] = hour;
-            }
-        }
+    // Step 2: Open the output CSV file for reading
+    FILE *file = fopen(OUTPUT_FILE, "r");
+    if (!file) {
+        fprintf(stderr, "Error: Failed to open parsed log file\n");
+        return LOG_PARSE_ACCESS_DENIED;
     }
 
-    _pclose(fp);
-    return count;
+    // Step 3: Parse CSV file line by line
+    char line[1024];
+    *entries = NULL;
+    *count = 0;
+
+    while (fgets(line, sizeof(line), file)) {
+        LogEntry entry = {0};
+
+        // Example CSV format: timestamp,user,event_type,message
+        sscanf(line, "%24[^,],%31[^,],%d,%255[^\n]",
+               entry.timestamp,
+               entry.user,
+               &entry.activity_type,
+               entry.resource);
+
+        sanitize_log_entry(&entry);
+
+        // Add to entries array
+        *entries = realloc(*entries, (*count + 1) * sizeof(LogEntry));
+        memcpy(&(*entries)[*count], &entry, sizeof(LogEntry));
+        (*count)++;
+    }
+
+    fclose(file);
+    return LOG_PARSE_SUCCESS;
 }

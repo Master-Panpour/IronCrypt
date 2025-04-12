@@ -2,51 +2,63 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
-#define PARSER_BINARY "/usr/local/bin/unifiedlog_parser"
-#define OUTPUT_FILE "/tmp/macos_logs.csv"
+#define MACOS_LOG_CMD "log show --predicate 'eventMessage contains \"session\"' --last 24h"
+#define MAX_LINE_LENGTH 1024
 
-LogParseStatus parse_mac_unified_log(LogEntry **entries, size_t *count) {
-    // Step 1: Run unifiedlog_parser to extract logs into CSV format
-    char command[512];
-    snprintf(command, sizeof(command), "%s --output %s", PARSER_BINARY, OUTPUT_FILE);
-    
-    int result = system(command);
-    if (result != 0) {
-        fprintf(stderr, "Error: Failed to execute unifiedlog_parser\n");
-        return LOG_PARSE_FAILURE;
+LogParseStatus parse_mac_log(LogEntry **entries, size_t *count) {
+    FILE *log_stream = popen(MACOS_LOG_CMD, "r");
+    if (!log_stream) {
+        return PARSE_ERROR_FILE;
     }
 
-    // Step 2: Open the output CSV file for reading
-    FILE *file = fopen(OUTPUT_FILE, "r");
-    if (!file) {
-        fprintf(stderr, "Error: Failed to open parsed log file\n");
-        return LOG_PARSE_ACCESS_DENIED;
+    // Initial allocation
+    *entries = malloc(MAX_LOG_ENTRIES * sizeof(LogEntry));
+    if (!*entries) {
+        pclose(log_stream);
+        return PARSE_ERROR_MEMORY;
     }
 
-    // Step 3: Parse CSV file line by line
-    char line[1024];
-    *entries = NULL;
+    char line[MAX_LINE_LENGTH];
     *count = 0;
 
-    while (fgets(line, sizeof(line), file)) {
-        LogEntry entry = {0};
+    while (fgets(line, sizeof(line), log_stream) && *count < MAX_LOG_ENTRIES) {
+        if (strstr(line, "session opened") || strstr(line, "session closed")) {
+            LogEntry entry = {0};
+            char timestamp[32], month[4], time_str[9];
+            int day, hour, minute;
 
-        // Example CSV format: timestamp,user,event_type,message
-        sscanf(line, "%24[^,],%31[^,],%d,%255[^\n]",
-               entry.timestamp,
-               entry.user,
-               &entry.activity_type,
-               entry.resource);
+            // Parse timestamp (format: "YYYY-MM-DD HH:MM:SS")
+            if (sscanf(line, "%19s", timestamp) != 1) {
+                continue;
+            }
 
-        sanitize_log_entry(&entry);
+            // Parse time components
+            if (sscanf(timestamp + 11, "%d:%d", &hour, &minute) != 2) {
+                continue;
+            }
 
-        // Add to entries array
-        *entries = realloc(*entries, (*count + 1) * sizeof(LogEntry));
-        memcpy(&(*entries)[*count], &entry, sizeof(LogEntry));
-        (*count)++;
+            // Store parsed data
+            entry.login_time.hour = hour;
+            entry.login_time.minute = minute;
+            
+            // Extract username
+            char *user_start = strstr(line, "for user '");
+            if (user_start) {
+                user_start += 10; // Skip "for user '"
+                char *user_end = strchr(user_start, '\'');
+                if (user_end) {
+                    size_t user_len = user_end - user_start;
+                    strncpy(entry.user_id, user_start, user_len);
+                    entry.user_id[user_len] = '\0';
+                }
+            }
+
+            (*entries)[(*count)++] = entry;
+        }
     }
 
-    fclose(file);
-    return LOG_PARSE_SUCCESS;
+    pclose(log_stream);
+    return PARSE_SUCCESS;
 }

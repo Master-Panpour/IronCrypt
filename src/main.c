@@ -1,52 +1,37 @@
-#ifndef LOG_PARSER_H
-#define LOG_PARSER_H
+#include <stdio.h>
+#include <stdlib.h>
+#include "log_parser.h"
+#include "threat_detection.h"
+#include "ai_bridge.h"
 
-#include <stddef.h>
-#include <stdbool.h>
-#include "security_constants.h"
+int main() {
+    // Initialize log parsers
+    LogEntry *entries = NULL;
+    size_t entry_count = 0;
+    
+    // Parse system logs based on OS
+    #ifdef __linux__
+        parse_linux_log(&entries, &entry_count);
+    #elif _WIN32
+        parse_windows_log(&entries, &entry_count);
+    #elif __APPLE__
+        parse_mac_log(&entries, &entry_count);
+    #endif
 
-// Security buffer sizes from security_constants.h
-#define MAX_USER_LEN 32
-#define ISO8601_LEN 25
-#define IP_LEN 46
-#define RES_PATH_LEN 256
+    // Process each log entry
+    for (size_t i = 0; i < entry_count; i++) {
+        // Basic rule-based detection
+        detect_basic_threats(&entries[i]);
+        
+        // Advanced ML-based detection
+        if (entries[i].risk_score > 0) {
+            ai_classify_threat(entries[i].user_id, 
+                             entries[i].login_count, 
+                             entries[i].file_access_count);
+        }
+    }
 
-typedef enum {
-    LOG_PARSE_SUCCESS,
-    LOG_PARSE_FAILURE,
-    LOG_PARSE_ACCESS_DENIED,
-    LOG_PARSE_INVALID_FORMAT
-} LogParseStatus;
-
-typedef struct {
-    char user[MAX_USER_LEN];
-    char timestamp[ISO8601_LEN];
-    char source_ip[IP_LEN];
-    int activity_type;
-    char resource[RES_PATH_LEN];
-    bool encrypted;
-} LogEntry;
-
-// OS-specific function prototype
-typedef LogParseStatus (*LogParser)(LogEntry**, size_t*);
-
-// Common functions
-LogParseStatus sanitize_log_entry(LogEntry *entry);
-bool validate_log_entry(const LogEntry *entry);
-void encrypt_log_data(LogEntry *entry);
-
-// OS detection
-#ifdef _WIN32
-    #define LOG_PATH "Security"
-    LogParseStatus parse_windows_log(LogEntry **entries, size_t *count);
-#elif __linux__
-    #define LOG_PATH "/var/log/auth.log"
-    LogParseStatus parse_linux_log(LogEntry **entries, size_t *count);
-#elif __APPLE__
-    #define LOG_PATH "/var/log/system.log"
-    LogParseStatus parse_macos_log(LogEntry **entries, size_t *count);
-#else
-    #error "Unsupported operating system"
-#endif
-
-#endif
+    // Clean up
+    free(entries);
+    return 0;
+}

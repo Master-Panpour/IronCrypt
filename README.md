@@ -1,16 +1,26 @@
 # IronCrypt
-Hackathon Preparation!!
-# Cybersecurity Employee Activity Monitor
 
-A lightweight C-based tool that analyzes login activity for suspicious behavior on Linux or Windows systems.
+A secure data storage and encryption system.
 
-## Features
-- Detects abnormal login hours (1 AM - 4 AM)
-- Flags users accessing too many files
-- Parses `/var/log/auth.log` (Linux) or Windows Event Log (ID 4624)
+## Security Setup
 
-## Compile & Run
+Before running the application, you must set the encryption key:
 
 ```bash
-make
-sudo ./monitor
+export IRONCRYPT_ENCRYPTION_KEY="your-32-byte-secure-key-here"
+```
+
+Requirements:
+- Key must be exactly 32 bytes (256 bits)
+- Key should contain cryptographically secure random characters
+- Never commit the key to version control
+
+For complete security guidelines, see [SECURITY.md](SECURITY.md)
+
+## Features
+- AES-256 encryption for sensitive data
+- Secure key management
+- Encrypted storage backend
+
+## Installation
+...

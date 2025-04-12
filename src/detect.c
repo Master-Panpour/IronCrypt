@@ -1,20 +1,35 @@
 #include <stdio.h>
+#include <time.h>
 #include "activity.h"
+#include "threat_detection.h"
+#include "security_constants.h"
 
-void detectThreats(EmployeeActivity *emp) {
-    int abnormalLoginCount = 0;
+void detect_basic_threats(LogEntry *entry) {
+    time_t now = time(NULL);
+    struct tm *tm_now = localtime(&now);
+    int current_hour = tm_now->tm_hour;
+    
+    // Initialize risk score
+    entry->risk_score = 0;
 
-    for (int i = 0; i < emp->logCount; i++) {
-        if (emp->logHrs[i] >= 1 && emp->logHrs[i] <= 4) {
-            abnormalLoginCount++;
-        }
+    // Check for unusual login times (1AM-4AM)
+    if (entry->login_time.hour >= 1 && entry->login_time.hour <= 4) {
+        entry->risk_score += RISK_WEIGHT_LATE_LOGIN;
     }
 
-    if (abnormalLoginCount > 2 || emp->fileAccessCount > 7) {
-        printf("ALERT: Suspicious activity detected for %s!\n", emp->name);
-        printf("  - Unusual logins: %d times (between 1 AM - 4 AM detected)\n", abnormalLoginCount);
-        printf("  - Files accessed: %d\n", emp->fileAccessCount);
-    } else {
-        printf("No suspicious activity for %s.\n", emp->name);
+    // Check for high file access rate
+    if (entry->file_access_count > FILE_ACCESS_THRESHOLD) {
+        entry->risk_score += RISK_WEIGHT_FILE_ACCESS;
+    }
+
+    // Check for multiple failed logins
+    if (entry->failed_attempts > FAILED_LOGIN_THRESHOLD) {
+        entry->risk_score += RISK_WEIGHT_FAILED_LOGIN;
+    }
+
+    // Log detection results
+    if (entry->risk_score > RISK_THRESHOLD) {
+        printf("[THREAT] Potential threat detected for user %s (score: %d)\n",
+               entry->user_id, entry->risk_score);
     }
 }

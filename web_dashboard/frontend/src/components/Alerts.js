@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { fetchActiveAlerts, resolveAlert } from '../services/api';
+import { fetchThreatData, resolveAlert } from '../services/api';
 
 const Alerts = () => {
     const [alerts, setAlerts] = useState([]);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { fetchRecentLogs, fetchActiveAlerts } from '../services/api';
+import { fetchEmployeeData, fetchThreatData } from '../services/api';
 
 const Dashboard = () => {
     const [logs, setLogs] = useState([]);

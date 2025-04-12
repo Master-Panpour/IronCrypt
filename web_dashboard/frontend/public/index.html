@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IronCrypt-1 Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>IronCrypt-1 Employee Activity Monitor</h1>
+        <div id="system-info"></div>
+        <nav>
+            <button onclick="navigateTo('index.html')">Employee Activity</button>
+            <button onclick="navigateTo('threat_detection.html')">Threat Detection</button>
+            <button onclick="navigateTo('behavior_analytics.html')">Behavior Analytics</button>
+        </nav>
+    </header>
+
+    <main>
+        <section id="employee-list">
+            <h2>Employee Activity</h2>
+            <div class="controls">
+                <input type="text" id="search" placeholder="Search employees...">
+                <button id="refresh">Refresh Data</button>
+            </div>
+            <div id="employees-container"></div>
+        </section>
+
+        <section id="threat-detection">
+            <h2>Threat Alerts</h2>
+            <div id="threats-container"></div>
+        </section>
+
+        <section id="behavior-analytics">
+            <h2>Behavior Analytics</h2>
+            <div id="analytics-container"></div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -21,7 +21,7 @@ function App() {
         <Router>
           <Suspense fallback={<div className="loading-spinner">Loading Dashboard...</div>}>
             <Routes>
-              <Route path="/" element={<InsiderThreatDashboard />} />
+              <Route path="/" element={<InsiderThreatDashboard/>} />
             </Routes>
           </Suspense>
         </Router>

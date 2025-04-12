@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import sqlite3
+import logging
+import logging.config
 import os
 from pydantic import BaseModel
 from typing import List, Optional
@@ -21,12 +23,12 @@ app.add_middleware(
 def get_db():
     try:
         db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'storage/ironcrypt.db'))
-        print(f"Attempting to connect to database at: {db_path}")
+        logging.info(f"Attempting to connect to database at: {db_path}")
         conn = sqlite3.connect(db_path)
         conn.row_factory = sqlite3.Row
         return conn
     except sqlite3.Error as e:
-        print(f"Database connection error: {e}")
+        logging.error(f"Database connection error: {e}")
         raise HTTPException(status_code=500, detail="Database connection failed")
 
 # Data models

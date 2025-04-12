@@ -3,28 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IronCrypt-1 Threat Detection</title>
+    <title>IronCrypt - Threat Detection</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>IronCrypt-1 Threat Detection</h1>
-        <div id="system-info"></div>
+        <div class="logo">IronCrypt</div>
         <nav>
-            <button onclick="navigateTo('home.html')">Home</button>
-            <button onclick="navigateTo('index.html')">Employee Activity</button>
-            <button onclick="navigateTo('threat_detection.html')">Threat Detection</button>
-            <button onclick="navigateTo('behavior_analytics.html')">Behavior Analytics</button>
+            <ul>
+                <li><a href="home.html">Dashboard</a></li>
+                <li><a href="index.html">Threat Detection</a></li>
+                <li><a href="behavior_analytics.html">Behavior Analytics</a></li>
+            </ul>
         </nav>
+        <div id="system-info"></div>
     </header>
 
     <main>
-        <section id="threat-detection">
-            <h2>Threat Alerts</h2>
-            <div class="controls">
-                <button id="refresh">Refresh Threats</button>
+        <section class="dashboard-section">
+            <h1 class="section-title">Threat Detection</h1>
+            <div class="flex">
+                <button id="refresh">Refresh Data</button>
             </div>
+        </section>
+
+        <section class="dashboard-section">
+            <h2 class="section-title">Active Threats</h2>
             <div id="threats-container"></div>
+        </section>
+
+        <section class="dashboard-section">
+            <h2 class="section-title">Threat History</h2>
+            <div id="threat-history-container"></div>
         </section>
     </main>
 

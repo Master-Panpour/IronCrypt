@@ -3,11 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IronCrypt Insider Threat Dashboard</title>
-    <meta name="description" content="Centralized dashboard for monitoring insider threats">
+    <title>IronCrypt - Insider Threat Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="root"></div>
-    <!-- This will be replaced by React content -->
+    <header>
+        <div class="logo">IronCrypt</div>
+        <nav>
+            <ul>
+                <li><a href="home.html">Dashboard</a></li>
+                <li><a href="threat_detection.html">Threat Detection</a></li>
+                <li><a href="behavior_analytics.html">Behavior Analytics</a></li>
+            </ul>
+        </nav>
+        <div id="system-info"></div>
+    </header>
+
+    <main>
+        <section class="dashboard-section">
+            <h1 class="section-title">Insider Threat Dashboard</h1>
+            <div class="flex">
+                <input type="text" id="search" placeholder="Search employees...">
+                <button id="refresh">Refresh Data</button>
+            </div>
+        </section>
+
+        <section class="dashboard-section">
+            <h2 class="section-title">Employee Activity</h2>
+            <div id="employees-container" class="grid"></div>
+        </section>
+
+        <section class="dashboard-section">
+            <h2 class="section-title">Recent Threats</h2>
+            <div id="threats-container"></div>
+        </section>
+
+        <section class="dashboard-section">
+            <h2 class="section-title">Behavior Analytics</h2>
+            <div id="analytics-container"></div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
 </body>
 </html>

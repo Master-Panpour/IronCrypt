@@ -3,38 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IronCrypt-1 Home</title>
+    <title>IronCrypt - Dashboard</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>Welcome to IronCrypt-1</h1>
-        <div id="system-info"></div>
+        <div class="logo">IronCrypt</div>
         <nav>
-            <button onclick="navigateTo('index.html')">Employee Activity</button>
-            <button onclick="navigateTo('threat_detection.html')">Threat Detection</button>
-            <button onclick="navigateTo('behavior_analytics.html')">Behavior Analytics</button>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="threat_detection.html">Threat Detection</a></li>
+                <li><a href="behavior_analytics.html">Behavior Analytics</a></li>
+            </ul>
         </nav>
+        <div id="system-info"></div>
     </header>
 
     <main>
-        <section>
-            <h2>Overview</h2>
-            <p>This application monitors employee activity, detects potential threats, and analyzes behavior for security purposes.</p>
-            <div class="quick-stats">
-                <div class="stat-card">
-                    <h3>Total Employees</h3>
-                    <p id="total-employees">Loading...</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Active Threats</h3>
-                    <p id="active-threats">Loading...</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Recent Anomalies</h3>
-                    <p id="recent-anomalies">Loading...</p>
-                </div>
+        <section class="dashboard-section">
+            <h1 class="section-title">Dashboard Overview</h1>
+            <div class="flex">
+                <button id="refresh">Refresh Data</button>
             </div>
+        </section>
+
+        <section class="dashboard-section">
+            <h2 class="section-title">Recent Activity</h2>
+            <div id="employees-container" class="grid"></div>
         </section>
     </main>
 

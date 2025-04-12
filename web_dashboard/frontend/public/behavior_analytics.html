@@ -3,32 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IronCrypt-1 Behavior Analytics</title>
+    <title>IronCrypt - Behavior Analytics</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <h1>IronCrypt-1 Behavior Analytics</h1>
-        <div id="system-info"></div>
+        <div class="logo">IronCrypt</div>
         <nav>
-            <button onclick="navigateTo('index.html')">Employee Activity</button>
-            <button onclick="navigateTo('threat_detection.html')">Threat Detection</button>
-            <button onclick="navigateTo('behavior_analytics.html')">Behavior Analytics</button>
+            <ul>
+                <li><a href="home.html">Dashboard</a></li>
+                <li><a href="threat_detection.html">Threat Detection</a></li>
+                <li><a href="index.html">Behavior Analytics</a></li>
+            </ul>
         </nav>
+        <div id="system-info"></div>
     </header>
 
     <main>
-        <section id="behavior-analytics">
-            <h2>Behavior Analytics</h2>
-            <div class="controls">
-                <button id="refresh">Refresh Analytics</button>
-                <select id="time-period">
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                </select>
+        <section class="dashboard-section">
+            <h1 class="section-title">Behavior Analytics</h1>
+            <div class="flex">
+                <button id="refresh">Refresh Data</button>
             </div>
-            <div id="analytics-container"></div>
+        </section>
+
+        <section class="dashboard-section">
+            <h2 class="section-title">Behavior Metrics</h2>
+            <div id="metrics-container" class="grid"></div>
+        </section>
+
+        <section class="dashboard-section">
+            <h2 class="section-title">Detected Anomalies</h2>
+            <div id="anomalies-container"></div>
         </section>
     </main>
 

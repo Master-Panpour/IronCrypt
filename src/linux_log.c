@@ -53,3 +53,4 @@ LogParseStatus parse_linux_log(LogEntry **entries, size_t *count) {
     fclose(file);
     return PARSE_SUCCESS;
 }
+

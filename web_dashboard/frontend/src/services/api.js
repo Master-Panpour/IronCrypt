@@ -80,6 +80,37 @@ export const fetchBehaviorAnalytics = async (timePeriod = 'daily') => {
     }
 };
 
+// New endpoints for dashboard
+export const fetchSystemHealth = async () => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/health`);
+        return await handleResponse(response);
+    } catch (error) {
+        console.error('Error fetching system health:', error);
+        throw error;
+    }
+};
+
+export const fetchThreatMetrics = async () => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/metrics`);
+        return await handleResponse(response);
+    } catch (error) {
+        console.error('Error fetching threat metrics:', error);
+        throw error;
+    }
+};
+
+export const fetchClassifiedActivities = async (page = 1) => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/classify?page=${page}`);
+        return await handleResponse(response);
+    } catch (error) {
+        console.error('Error fetching classified activities:', error);
+        throw error;
+    }
+};
+
 // Existing alert resolution endpoint
 export const resolveAlert = async (alertId) => {
     try {

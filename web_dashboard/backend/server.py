@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import sqlite3
 import os
 from pydantic import BaseModel
-from typing import List, Optional  # Added Optional import
+from typing import List, Optional
 import uvicorn
 
 app = FastAPI()
@@ -11,7 +11,7 @@ app = FastAPI()
 # Configure CORS - more flexible for development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins in development
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -21,7 +21,7 @@ app.add_middleware(
 def get_db():
     try:
         db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'storage/ironcrypt.db'))
-        print(f"Attempting to connect to database at: {db_path}")  # Debug output
+        print(f"Attempting to connect to database at: {db_path}")
         conn = sqlite3.connect(db_path)
         conn.row_factory = sqlite3.Row
         return conn
@@ -88,6 +88,27 @@ def resolve_alert(alert_id: int):
         return {"status": "success", "message": f"Alert {alert_id} resolved"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/v1/health")
+def health_check():
+    return {"status": "healthy"}
+
+@app.get("/api/v1/metrics")
+def get_metrics():
+    # Mock metrics data
+    return {
+        "threats": 5,
+        "highRiskUsers": ["jdoe", "asmith"]
+    }
+
+@app.get("/api/v1/classify")
+def classify_activities(page: int = 1):
+    # Mock activity data
+    activities = [
+        {"username": "jdoe", "action": "Anomalous Login", "timestamp": "2025-04-12 10:23", "risk": "high"},
+        {"username": "asmith", "action": "File Exfiltration", "timestamp": "2025-04-12 09:55", "risk": "medium"}
+    ]
+    return activities[(page-1)*10:page*10]
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
